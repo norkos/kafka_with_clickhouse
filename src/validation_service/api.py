@@ -1,7 +1,7 @@
 import logging
 from fastapi import APIRouter, Depends
 
-from validation_service.dependecies import get_event_service_with_rabbit
+from validation_service.dependecies import get_event_service_with_kafka
 from validation_service.services import AbstractEventService
 from validation_service.event import Event
 from validation_service.utils.logconf import DEFAULT_LOGGER
@@ -14,7 +14,7 @@ router = APIRouter(
 
 
 @router.post("/event", response_model=Event)
-async def create_event(event: Event, event_service: AbstractEventService = Depends(get_event_service_with_rabbit)):
+async def create_event(event: Event, event_service: AbstractEventService = Depends(get_event_service_with_kafka)):
     logger.debug(f'Received request: {event}')
     await event_service.publish_event(event)
     return event
