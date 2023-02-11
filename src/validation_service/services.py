@@ -1,5 +1,7 @@
 from abc import ABC
+
 from validation_service.event import Event
+from validation_service.publisher import AbstractMessageProducer
 
 
 class AbstractEventService(ABC):
@@ -8,9 +10,9 @@ class AbstractEventService(ABC):
 
 
 class EventService(AbstractEventService):
+
+    def __init__(self, message_producer: AbstractMessageProducer):
+        self._message_producer = message_producer
+
     async def publish_event(self, event: Event) -> None:
-        pass
-
-
-def get_event_service() -> AbstractEventService:
-    return EventService()
+        await self._message_producer.publish(event)
