@@ -13,6 +13,7 @@ dictConfig(log_config)
 logger = logging.getLogger(DEFAULT_LOGGER)
 
 app = FastAPI(
+    debug=DEBUG_LOGGER_LEVEL,
     title='blockchain-service',
     docs_url='/_swagger'
 )
