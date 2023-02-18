@@ -5,15 +5,35 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        KAFKA_URL: 'kafka:29092'
     environment:
       CLOUDAMQP_URL: 'amqp://rabbitmq?connection_attempts=5&retry_delay=5'
+      DB_URL: 'amqp://rabbitmq?connection_attempts=5&retry_delay=5'
       KAFKA_URL: 'kafka:29092'
+      KAFKA_TOPIC: 'topic_event'
       DEBUG_LOGGER_LEVEL: 'True'
       PORT: 80
     ports:
       - '8080:80'
     volumes:
       - .:/app
+    networks:
+      - network
+
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+      - "9009:9009"
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 262144
+        hard: 262144
+    volumes:
+      - ./clickhouse_config.xml:/etc/clickhouse-server/config.xml
     networks:
       - network
 
@@ -45,6 +65,7 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   kafdrop:
     image: obsidiandynamics/kafdrop:3.27.0

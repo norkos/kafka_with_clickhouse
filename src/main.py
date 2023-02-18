@@ -8,6 +8,7 @@ from validation_service.api import router
 from validation_service.utils.kafka import KafkaMessageProducer
 from validation_service.utils.settings import PORT, DEBUG_LOGGER_LEVEL
 from validation_service.utils.logconf import log_config, DEFAULT_LOGGER
+from validation_service.clickhouse import create_table
 
 dictConfig(log_config)
 
@@ -22,14 +23,19 @@ app = FastAPI(
 app.include_router(router)
 
 
+kafka = KafkaMessageProducer.get_instance()
+
+
 @app.on_event("startup")
 async def startup():
     logger.info(f'Application started with debugging: {DEBUG_LOGGER_LEVEL}')
+    await kafka.start()
+    create_table()
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    await (await KafkaMessageProducer.get_instance()).stop()
+    await kafka.stop()
 
 
 if __name__ == "__main__":

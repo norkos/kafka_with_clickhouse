@@ -1,0 +1,126 @@
+<!--
+  NOTE: User and query level settings are set up in "users.xml" file.
+  If you have accidentally specified user-level settings here, server won't start.
+  You can either move the settings to the right place inside "users.xml" file
+   or add <skip_check_for_incorrect_settings>1</skip_check_for_incorrect_settings> here.
+-->
+<clickhouse>
+     <kafka>
+        <log_level>7</log_level>
+    <debug>cgrp</debug>
+    <auto_offset_reset>smallest</auto_offset_reset>
+  </kafka>
+    <logger>
+        <!-- Possible levels [1]:
+
+          - none (turns off logging)
+          - fatal
+          - critical
+          - error
+          - warning
+          - notice
+          - information
+          - debug
+          - trace
+          - test (not for production usage)
+
+            [1]: https://github.com/pocoproject/poco/blob/poco-1.9.4-release/Foundation/include/Poco/Logger.h#L105-L114
+        -->
+        <level>test</level>
+        <log>/var/log/clickhouse-server/clickhouse-server.log</log>
+        <errorlog>/var/log/clickhouse-server/clickhouse-server.err.log</errorlog>
+        <!-- Rotation policy
+             See https://github.com/pocoproject/poco/blob/poco-1.9.4-release/Foundation/include/Poco/FileChannel.h#L54-L85
+          -->
+        <size>1000M</size>
+        <count>10</count>
+
+    </logger>
+
+
+
+    <!-- Port for HTTP API. See also 'https_port' for secure connections.
+         This interface is also used by ODBC and JDBC drivers (DataGrip, Dbeaver, ...)
+         and by most of web interfaces (embedded UI, Grafana, Redash, ...).
+      -->
+    <http_port>8123</http_port>
+
+    <!-- Port for interaction by native protocol with:
+         - clickhouse-client and other native ClickHouse tools (clickhouse-benchmark, clickhouse-copier);
+         - clickhouse-server with other clickhouse-servers for distributed query processing;
+         - ClickHouse drivers and applications supporting native protocol
+         (this protocol is also informally called as "the TCP protocol");
+         See also 'tcp_port_secure' for secure connections.
+    -->
+    <tcp_port>9000</tcp_port>
+
+    <!-- Compatibility with MySQL protocol.
+         ClickHouse will pretend to be MySQL for applications connecting to this port.
+    -->
+    <mysql_port>9004</mysql_port>
+
+    <!-- Compatibility with PostgreSQL protocol.
+         ClickHouse will pretend to be PostgreSQL for applications connecting to this port.
+    -->
+    <postgresql_port>9005</postgresql_port>
+
+    <!-- HTTP API with TLS (HTTPS).
+         You have to configure certificate to enable this interface.
+         See the openSSL section below.
+    -->
+    <!-- <https_port>8443</https_port> -->
+
+    <!-- Native interface with TLS.
+         You have to configure certificate to enable this interface.
+         See the openSSL section below.
+    -->
+    <!-- <tcp_port_secure>9440</tcp_port_secure> -->
+
+    <!-- Native interface wrapped with PROXYv1 protocol
+         PROXYv1 header sent for every connection.
+         ClickHouse will extract information about proxy-forwarded client address from the header.
+    -->
+    <!-- <tcp_with_proxy_port>9011</tcp_with_proxy_port> -->
+
+    <!-- Port for communication between replicas. Used for data exchange.
+         It provides low-level data access between servers.
+         This port should not be accessible from untrusted networks.
+         See also 'interserver_http_credentials'.
+         Data transferred over connections to this port should not go through untrusted networks.
+         See also 'interserver_https_port'.
+      -->
+    <interserver_http_port>9009</interserver_http_port>
+
+
+    <max_connections>4096</max_connections>
+
+    <!-- For 'Connection: keep-alive' in HTTP 1.1 -->
+    <keep_alive_timeout>3</keep_alive_timeout>
+
+
+    <!-- Sources to read users, roles, access rights, profiles of settings, quotas. -->
+    <user_directories>
+        <users_xml>
+            <!-- Path to configuration file with predefined users. -->
+            <path>users.xml</path>
+        </users_xml>
+        <local_directory>
+            <!-- Path to folder where users created by SQL commands are stored. -->
+            <path>/var/lib/clickhouse/access/</path>
+        </local_directory>
+    </user_directories>
+
+
+    <!-- Default profile of settings. -->
+    <default_profile>default</default_profile>
+
+    <!-- Comma-separated list of prefixes for user-defined settings. -->
+    <custom_settings_prefixes></custom_settings_prefixes>
+
+
+
+    <!-- Default database. -->
+    <default_database>default</default_database>
+
+
+</clickhouse>

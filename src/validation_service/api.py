@@ -5,6 +5,7 @@ from validation_service.dependecies import get_event_service_with_kafka
 from validation_service.services import AbstractEventService
 from validation_service.event import Event
 from validation_service.utils.logconf import DEFAULT_LOGGER
+from validation_service.clickhouse import get_data
 
 logger = logging.getLogger(DEFAULT_LOGGER)
 
@@ -22,4 +23,5 @@ async def create_event(event: Event, event_service: AbstractEventService = Depen
 
 @router.get("/report")
 async def report():
+    get_data()
     return {"message": "Hello World"}

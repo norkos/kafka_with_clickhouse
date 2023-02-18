@@ -14,27 +14,30 @@ logger = logging.getLogger(DEFAULT_LOGGER)
 class KafkaMessageProducer(AbstractMessageProducer):
     instance = None
 
-    def __init__(self, producer: AIOKafkaProducer):
-        self._producer = producer
+    def __init__(self):
+        self._producer = None
         self._topic = KAFKA_TOPIC
 
     @classmethod
-    async def get_instance(cls):
-        if not cls.instance:
-            producer = AIOKafkaProducer(loop=asyncio.get_event_loop(), bootstrap_servers=KAFKA_URL)
-            await producer.start()
-            logger.debug('Kafka up')
-            cls.instance = cls(producer)
+    def get_instance(cls):
+        if not cls.instance:            
+            cls.instance = cls()
         return cls.instance
 
+    async def start(self):
+        self._producer = AIOKafkaProducer(loop=asyncio.get_event_loop(), bootstrap_servers=KAFKA_URL)
+        await self._producer.start()
+        logger.debug('Kafka up')
+        
     async def stop(self):
         await self._producer.stop()
+        logger.debug('Kafka down')
 
     async def publish(self, event: Event) -> None:
         try:
             message = json.dumps(event.dict(), default=str).encode(ENCODING)
             await self._producer.send_and_wait(self._topic, message)
-            logger.debug(f'Sent the event with body={message} to Kafka topic key={self._topic}')
+            logger.debug(f'Sent the event with body={message} to Kafka topic={self._topic}')
         except Exception as err:
             logger.error(err)
             raise err
