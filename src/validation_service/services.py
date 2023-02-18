@@ -15,4 +15,6 @@ class EventService(AbstractEventService):
         self._message_producer = message_producer
 
     async def publish_event(self, event: Event) -> None:
-        await self._message_producer.publish(event)
+        event_utc = event
+        event_utc.time = event_utc.time.replace(tzinfo=None)
+        await self._message_producer.publish(event_utc)

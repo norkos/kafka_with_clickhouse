@@ -24,4 +24,4 @@ async def create_event(event: Event, event_service: AbstractEventService = Depen
 @router.get("/report")
 async def report():
     get_data()
-    return {"message": "Hello World"}
+    return {"message": 'todo'}

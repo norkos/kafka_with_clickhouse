@@ -34,6 +34,7 @@ services:
         hard: 262144
     volumes:
       - ./clickhouse_config.xml:/etc/clickhouse-server/config.xml
+      - ./clickhouse-server.log:/var/log/clickhouse-server/clickhouse-server.log
     networks:
       - network
 

@@ -6,7 +6,7 @@
 -->
 <clickhouse>
      <kafka>
-        <log_level>7</log_level>
+        <log_level>0</log_level>
     <debug>cgrp</debug>
     <auto_offset_reset>smallest</auto_offset_reset>
   </kafka>
